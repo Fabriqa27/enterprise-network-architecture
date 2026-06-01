@@ -1,7 +1,7 @@
 # Technical Design Document (TDD)
 ## Arquitectura de Infraestructura de Red - TecnoNet Solutions
 
-![Network Architecture](docs/topologia_logica.png)
+![Network Architecture](docs/topologia_logica.2.png)
 
 **Versión:** 1.0  
 **Estado:** Aprobado para Implementación  
