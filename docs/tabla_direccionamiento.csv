@@ -1,0 +1,26 @@
+Ubicacion,Dispositivo,Interfaz_o_VLAN,Direccion_de_Red,Mascara_Subred,IP_Asignada,Gateway_Predeterminado,Descripcion_Uso
+Costa Rica (Sede Central),CR-FW-1 (ASA Activo),Outside (Gig1/1),203.0.113.0,255.255.255.248 (/29),203.0.113.1,203.0.113.2,Enlace WAN perimetral activo hacia SW-ISP
+Costa Rica (Sede Central),CR-FW-1 (ASA Activo),Inside (Gig1/2),10.10.2.0,255.255.255.252 (/30),10.10.2.1,N/A,Enlace P2P interno hacia CR-RTR-1
+Costa Rica (Sede Central),CR-FW-2 (ASA Respaldo),Outside (Gig1/1),203.0.113.0,255.255.255.248 (/29),203.0.113.3,203.0.113.2,Enlace WAN perimetral respaldo hacia SW-ISP
+Costa Rica (Sede Central),CR-FW-2 (ASA Respaldo),Inside (Gig1/2),10.10.3.0,255.255.255.252 (/30),10.10.3.1,N/A,Enlace P2P interno hacia CR-RTR-2
+Costa Rica (Sede Central),CR-FW-2 (ASA Respaldo),DMZ (Gig1/3),172.16.10.0,255.255.255.0 (/24),172.16.10.2,N/A,Segmento de servidores DMZ publicos
+Costa Rica (Sede Central),CR-RTR-1 (Core 1),Gig0/0/1,10.10.2.0,255.255.255.252 (/30),10.10.2.2,10.10.2.1,Uplink principal hacia CR-FW-1
+Costa Rica (Sede Central),CR-RTR-1 (Core 1),Serial0/1/0,10.255.255.0,255.255.255.252 (/30),10.255.255.1,N/A,Enlace WAN Dedicado hacia Sede Remota
+Costa Rica (Sede Central),CR-RTR-1/2 (SVI),VLAN 10,10.1.0.0,255.255.252.0 (/22),10.1.0.1,N/A,Gateway LAN - Depto. Soporte (Nivel 1)
+Costa Rica (Sede Central),CR-RTR-1/2 (SVI),VLAN 20,10.1.6.0,255.255.255.0 (/24),10.1.6.1,N/A,Gateway LAN - Depto. Finanzas (Nivel 2)
+Costa Rica (Sede Central),CR-RTR-1/2 (SVI),VLAN 30,10.1.4.0,255.255.254.0 (/23),10.1.4.1,N/A,Gateway LAN - Depto. Ingenieria (Nivel 3)
+Costa Rica (Sede Central),CR-RTR-1/2 (SVI),VLAN 40,10.1.7.0,255.255.255.128 (/25),10.1.7.1,N/A,Gateway LAN - Depto. Innovacion (Nivel 4)
+Costa Rica (Sede Central),CR-RTR-1/2 (SVI),VLAN 50,10.1.7.128,255.255.255.192 (/26),10.1.7.129,N/A,Gateway LAN - Depto. Gerencia (Nivel 5)
+Costa Rica (Sede Central),CR-RTR-2 (Core 2),Gig0/0/0,10.10.1.4,255.255.255.252 (/30),10.10.1.5,N/A,Enlace P2P de HA entre Cores
+Costa Rica (Sede Central),CR-RTR-2 (Core 2),Gig0/0/1,10.10.3.0,255.255.255.252 (/30),10.10.3.2,10.10.3.1,Uplink respaldo hacia CR-FW-2
+Costa Rica (Sede Central),Servidores,SRV-WEB,172.16.10.0,255.255.255.0 (/24),172.16.10.10,172.16.10.1,Servidor Web (NAT Publico: 203.0.113.10)
+Costa Rica (Sede Central),Servidores,SRV-MAIL,172.16.10.0,255.255.255.0 (/24),172.16.10.20,172.16.10.1,Servidor de Correo (NAT Publico: 203.0.113.11)
+Costa Rica (Sede Central),Servidores,SRV-DNS,172.16.10.0,255.255.255.0 (/24),172.16.10.30,172.16.10.1,Servidor DNS DMZ
+Costa Rica (Sede Central),Servidores,Internal-DNS,10.10.0.0,255.255.0.0 (/16),10.10.0.10,N/A,Servidor DNS Interno (Asignado via DHCP a VLANs)
+Nicaragua (VPN),NI-RTR-1,Gig0/0/0,10.3.0.0,255.255.252.0 (/22),10.3.0.1,N/A,Gateway local para usuarios de VPN
+Nicaragua (VPN),NI-RTR-1,Gig0/0/1,192.168.200.0,255.255.255.0 (/24),192.168.200.3,192.168.200.1,Salida WAN hacia ISP (Peer IPsec)
+Nicaragua (VPN),NT-DIST-1,VLAN 10,10.3.0.0,255.255.252.0 (/22),10.3.0.2,10.3.0.1,IP de gestion del Switch de acceso (SSH)
+Sede Remota,SR-RTR-1,LAN,10.2.0.0,255.255.255.0 (/24),10.2.0.1,N/A,Gateway local para usuarios de Sede Remota
+Sede Remota,SR-RTR-1,Serial0/0/0,10.255.255.0,255.255.255.252 (/30),10.255.255.2,N/A,Enlace WAN Dedicado hacia Costa Rica
+Internet (Simulacion),ISP-INTERNET,Gig0/0/0,203.0.113.0,255.255.255.248 (/29),203.0.113.2,N/A,Conexion ISP hacia Costa Rica (SW-ISP)
+Internet (Simulacion),ISP-INTERNET,Gig0/0/1,192.168.200.0,255.255.255.0 (/24),192.168.200.1,N/A,Conexion ISP hacia Nicaragua

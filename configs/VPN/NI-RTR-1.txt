@@ -1,0 +1,117 @@
+Current configuration : 1744 bytes
+!
+version 15.4
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname NI-RTR-1
+!
+!
+!
+enable secret 5 $1$mERr$RldxcCZEZsTFTETUyRaA50
+!
+!
+ip dhcp excluded-address 10.3.0.1 10.3.0.10
+!
+ip dhcp pool NICARAGUA_LAN
+ network 10.3.0.0 255.255.252.0
+ default-router 10.3.0.1
+ dns-server 10.10.0.10
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+!
+!
+username admin privilege 15 secret 5 $1$mERr$RldxcCZEZsTFTETUyRaA50
+!
+!
+crypto isakmp policy 10
+ encr aes
+ authentication pre-share
+ group 5
+!
+crypto isakmp key vpnsecret123 address 203.0.113.1
+!
+!
+!
+crypto ipsec transform-set TS-NICA esp-aes esp-sha-hmac
+!
+crypto map MAP-CR 10 ipsec-isakmp 
+ set peer 203.0.113.1
+ set transform-set TS-NICA 
+ match address ACL-VPN-CR
+!
+!
+!
+!
+!
+!
+ip ssh version 2
+ip domain-name tecnonet.ni
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ description LAN-NICARAGUA
+ ip address 10.3.0.1 255.255.252.0
+ ip nat inside
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0/1
+ description WAN-HACIA-ISP
+ ip address 192.168.200.3 255.255.255.0
+ ip nat outside
+ duplex auto
+ speed auto
+ crypto map MAP-CR
+!
+interface GigabitEthernet0/0/2
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+ip nat inside source list ACL-NO-NAT interface GigabitEthernet0/0/1 overload
+ip classless
+ip route 0.0.0.0 0.0.0.0 192.168.200.1 
+!
+ip flow-export version 9
+!
+!
+ip access-list extended ACL-VPN-CR
+ permit ip 10.3.0.0 0.0.3.255 10.1.0.0 0.0.255.255
+ip access-list extended ACL-NO-NAT
+ deny ip 10.3.0.0 0.0.3.255 10.1.0.0 0.0.255.255
+ permit ip 10.3.0.0 0.0.3.255 any
+!
+!
+!
+!
+!
+line con 0
+ login local
+!
+line aux 0
+!
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+end

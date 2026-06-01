@@ -1,0 +1,177 @@
+Current configuration : 3213 bytes
+!
+version 15.4
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname CR-RTR-1
+!
+!
+!
+enable secret 5 $1$mERr$RldxcCZEZsTFTETUyRaA50
+!
+!
+ip dhcp excluded-address 10.1.0.1 10.1.0.10
+ip dhcp excluded-address 10.1.4.1 10.1.4.10
+ip dhcp excluded-address 10.1.6.1 10.1.6.10
+ip dhcp excluded-address 10.1.7.1 10.1.7.10
+ip dhcp excluded-address 10.1.7.129 10.1.7.135
+!
+ip dhcp pool VLAN10-SOPORTE
+ network 10.1.0.0 255.255.252.0
+ default-router 10.1.0.1
+ dns-server 10.10.0.10
+ip dhcp pool VLAN20-FINANZAS
+ network 10.1.6.0 255.255.255.0
+ default-router 10.1.6.1
+ dns-server 10.10.0.10
+ip dhcp pool VLAN30-INGENIERIA
+ network 10.1.4.0 255.255.254.0
+ default-router 10.1.4.1
+ dns-server 10.10.0.10
+ip dhcp pool VLAN40-INNOVACION
+ network 10.1.7.0 255.255.255.128
+ default-router 10.1.7.1
+ dns-server 10.10.0.10
+ip dhcp pool VLAN50-GERENCIA
+ network 10.1.7.128 255.255.255.128
+ default-router 10.1.7.129
+ dns-server 10.10.0.10
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+!
+!
+username admin privilege 15 secret 5 $1$mERr$RldxcCZEZsTFTETUyRaA50
+!
+!
+crypto isakmp key VPN-NICA address 10.3.0.1
+!
+!
+!
+crypto ipsec transform-set TS-NICA esp-aes esp-sha-hmac
+!
+!
+!
+!
+!
+ip ssh version 2
+no ip domain-lookup
+ip domain-name tecnonet.cr
+!
+!
+spanning-tree mode pvst
+!
+class-map match-all TRAFICO-CRITICO
+ match access-group name ACL-QOS-CRITICO
+!
+policy-map POLIZA-QOS-WAN
+ class TRAFICO-CRITICO
+  bandwidth percent 30
+ class class-default
+  fair-queue
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ description ENLACE-A-CR-CORE-1
+ ip address 10.10.1.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0/1
+ description ENLACE-HACIA-FW-PRINCIPAL
+ ip address 10.10.2.2 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0/2
+ no ip address
+ duplex auto
+ speed auto
+!
+interface Serial0/1/0
+ description WAN-A-GUATEMALA-GT-RTR-1
+ ip address 10.255.255.1 255.255.255.252
+!
+interface Serial0/1/1
+ no ip address
+ clock rate 2000000
+ shutdown
+!
+interface GigabitEthernet0/2/0
+ description ENLACE-A-CR-CORE-2
+ switchport mode access
+!
+interface GigabitEthernet0/2/1
+ switchport mode access
+!
+interface GigabitEthernet0/2/2
+ switchport mode access
+!
+interface GigabitEthernet0/2/3
+ switchport mode access
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ router-id 10.10.255.1
+ log-adjacency-changes
+ network 10.10.1.0 0.0.0.3 area 0
+ network 10.10.1.8 0.0.0.3 area 0
+ network 10.10.2.0 0.0.0.3 area 0
+ network 10.1.0.0 0.0.255.255 area 0
+ network 10.255.255.0 0.0.0.3 area 1
+ default-information originate
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.10.2.1 
+ip route 10.3.0.0 255.255.252.0 10.10.2.1 
+!
+ip flow-export version 9
+!
+!
+ip access-list extended ACL-VPN-NICA
+ permit ip 10.1.0.0 0.0.3.255 10.3.0.0 0.0.3.255
+ permit ip 10.1.4.0 0.0.1.255 10.3.0.0 0.0.3.255
+ permit ip 10.1.6.0 0.0.0.255 10.3.0.0 0.0.3.255
+ permit ip 10.1.7.0 0.0.0.255 10.3.0.0 0.0.3.255
+ip access-list extended ACL-QOS-CRITICO
+ permit udp any any range 16384 32767
+ permit tcp any any eq 22
+ permit esp any any
+ permit udp any any eq isakmp
+!
+!
+!
+!
+!
+line con 0
+ password 7 0802455D0A16544541
+ login
+!
+line aux 0
+!
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+end
+
+
+CR-RTR-1#
+08:48:16: %OSPF-5-ADJCHG: Process 1, Nbr 10.2.255.1 on Serial0/1/0 from FULL to DOWN, Neighbor Down: Dead timer expired
+
+08:48:16: %OSPF-5-ADJCHG: Process 1, Nbr 10.2.255.1 on Serial0/1/0 from FULL to DOWN, Neighbor Down: Interface down or detached
+
+08:48:16: %OSPF-5-ADJCHG: Process 1, Nbr 10.2.255.1 on Serial0/1/0 from LOADING to FULL, Loading Done

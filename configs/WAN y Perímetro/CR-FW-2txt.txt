@@ -1,0 +1,142 @@
+ASA Version 9.6(1)
+!
+hostname CR-FW-2
+domain-name empresa.local
+enable password TQaTZQ6borpImUez encrypted
+names
+!
+interface GigabitEthernet1/1
+ nameif outside
+ security-level 0
+ ip address 203.0.113.3 255.255.255.248
+!
+interface GigabitEthernet1/2
+ nameif inside
+ security-level 100
+ ip address 10.10.3.1 255.255.255.252
+!
+interface GigabitEthernet1/3
+ nameif dmz
+ security-level 50
+ ip address 172.16.10.2 255.255.255.0
+!
+interface GigabitEthernet1/4
+ no nameif
+ no security-level
+ no ip address
+!
+interface GigabitEthernet1/5
+ no nameif
+ no security-level
+ no ip address
+ shutdown
+!
+interface GigabitEthernet1/6
+ no nameif
+ no security-level
+ no ip address
+ shutdown
+!
+interface GigabitEthernet1/7
+ no nameif
+ no security-level
+ no ip address
+ shutdown
+!
+interface GigabitEthernet1/8
+ no nameif
+ no security-level
+ no ip address
+ shutdown
+!
+interface Management1/1
+ management-only
+ nameif mgmt
+ security-level 100
+ ip address 10.10.0.253 255.255.255.0
+!
+object network OBJ-NET-DMZ
+ subnet 172.16.10.0 255.255.255.0
+ nat (dmz,outside) dynamic interface
+object network OBJ-NET-INTERNA
+ subnet 10.0.0.0 255.0.0.0
+ nat (inside,outside) dynamic interface
+object network OBJ-NET-MGMT
+ subnet 10.10.0.0 255.255.0.0
+ nat (inside,outside) dynamic interface
+object network OBJ-NET-NICARAGUA
+ subnet 10.3.0.0 255.255.0.0
+object network OBJ-NET-USUARIOS
+ subnet 10.1.0.0 255.255.0.0
+ nat (inside,outside) dynamic interface
+!
+route outside 0.0.0.0 0.0.0.0 203.0.113.6 1
+route outside 0.0.0.0 0.0.0.0 203.0.113.2 1
+!
+access-list OUTSIDE-IN extended permit icmp any any
+access-list OUTSIDE-IN extended permit udp any any eq isakmp
+access-list OUTSIDE-IN extended permit ip host 10.3.0.1 any
+access-list OUTSIDE-IN extended permit icmp any any echo-reply
+access-list OUTSIDE-IN extended permit icmp any any unreachable
+access-list OUTSIDE-IN extended deny ip any any
+access-list INSIDE-OUT extended permit ip 10.1.0.0 255.255.0.0 10.3.0.0 255.255.0.0
+access-list INSIDE-OUT extended permit tcp 10.1.0.0 255.255.0.0 any eq www
+access-list INSIDE-OUT extended permit tcp 10.1.0.0 255.255.0.0 any eq 443
+access-list INSIDE-OUT extended permit udp 10.1.0.0 255.255.0.0 any eq domain
+access-list INSIDE-OUT extended permit icmp any host 192.168.100.1
+access-list INSIDE-OUT extended permit icmp any any
+access-list INSIDE-OUT extended deny ip any any
+access-list NT-VPN-INTERESTING extended permit ip 10.1.0.0 255.255.0.0 10.3.0.0 255.255.0.0
+!
+!
+access-group OUTSIDE-IN in interface outside
+access-group INSIDE-OUT in interface inside
+aaa authentication ssh console LOCAL
+!
+username admin password PNFlLN5BlnIyMLra encrypted
+!
+class-map inspection_default
+ match default-inspection-traffic
+!
+policy-map type inspect dns preset_dns_map
+ parameters
+  message-length maximum 512
+policy-map global_policy
+ class inspection_default
+  inspect dns preset_dns_map
+  inspect ftp 
+  inspect icmp 
+  inspect tftp 
+!
+service-policy global_policy global
+!
+telnet timeout 5
+ssh 10.10.0.0 255.255.255.0 inside
+ssh 10.10.0.0 255.255.0.0 inside
+ssh timeout 5
+!
+!
+crypto ipsec ikev1 transform-set TS-NT-AES256 esp-aes esp-sha-hmac
+!
+crypto map CMAP-OUTSIDE 10 match address NT-VPN-INTERESTING
+crypto map CMAP-OUTSIDE 10 set peer 198.51.100.10 
+crypto map CMAP-OUTSIDE 10 set ikev1 transform-set TS-NT-AES256 
+crypto map CMAP-OUTSIDE interface outside
+crypto ikev1 enable outside
+crypto ikev1 policy 10
+ encr aes
+ authentication pre-share
+ group 5
+!
+tunnel-group 198.51.100.10 type ipsec-l2l
+tunnel-group 198.51.100.10 ipsec-attributes
+ ikev1 pre-shared-key vpnsecret123
+tunnel-group 192.168.200.3 type ipsec-l2l
+tunnel-group 192.168.200.3 ipsec-attributes
+ ikev1 pre-shared-key vpnsecret123
+!
+router ospf 1
+ log-adjacency-changes
+ network 10.10.3.0 255.255.255.252 area 0
+ default-information originate
+!
