@@ -3,8 +3,6 @@
 
 
 **Versión:** 1.0  
-**Estado:** Aprobado para Implementación  
-**Clasificación:** Interno / Confidencial  
 
 ---
 
